@@ -1,5 +1,7 @@
 # ../projectile_trails/config.py
 
+"""Provides configuration based functionality for the plugin."""
+
 # =============================================================================
 # >> IMPORTS
 # =============================================================================
@@ -16,7 +18,7 @@ from paths import PLUGIN_DATA_PATH
 # >> GLOBAL VARIABLES
 # =============================================================================
 # Get the game's ini file
-GameObjects = ConfigObj(
+game_objects = ConfigObj(
     PLUGIN_DATA_PATH.joinpath('projectile_trails', GAME_NAME + '.ini'))
 
 
@@ -24,13 +26,13 @@ GameObjects = ConfigObj(
 # >> CLASSES
 # =============================================================================
 class _ConfigurationManager(dict):
-    '''Class used to create children automatically to store cvars'''
+
+    """Class used to create children automatically to store cvars."""
 
     def __missing__(self, item):
-        '''Returns a new _ConfigurationManager
-            instance as the value for the given item'''
+        """Return a new _ConfigurationManager instance recursively."""
         value = self[item] = _ConfigurationManager()
         return value
 
 # Get the _ConfigurationManager instance
-ConfigurationManager = _ConfigurationManager()
+configuration_manager = _ConfigurationManager()

@@ -1,5 +1,7 @@
 # ../projectile_trails/teams.py
 
+"""Provides teams by number/name for the current game."""
+
 # =============================================================================
 # >> IMPORTS
 # =============================================================================
@@ -11,7 +13,7 @@ from entities import EntityGenerator
 # >> GLOBAL VARIABLES
 # =============================================================================
 # Store an empty dictionary to store teams by number and name
-GameTeams = {}
+game_teams = {}
 
 # Loop through each entity on the server
 for edict in EntityGenerator():
@@ -32,4 +34,4 @@ for edict in EntityGenerator():
     teamnumber = edict.get_prop_int('m_iTeamNum')
 
     # Store the team number and name
-    GameTeams[teamnumber] = teamname
+    game_teams[teamnumber] = teamname

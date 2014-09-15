@@ -1,5 +1,7 @@
 # ../projectile_trails/entities.py
 
+"""Provides a class that creates trails for entities."""
+
 # =============================================================================
 # >> IMPORTS
 # =============================================================================
@@ -15,30 +17,29 @@ from entities.helpers import index_from_edict
 from filters.players import PlayerIter
 
 # Script Imports
-from projectile_trails.config import ConfigurationManager
-from projectile_trails.effects import EffectManager
-from projectile_trails.teams import GameTeams
+from projectile_trails.config import configuration_manager
+from projectile_trails.effects import effect_manager
+from projectile_trails.teams import game_teams
 
 
 # =============================================================================
 # >> CLASSES
 # =============================================================================
 class EntityManager(dict):
-    '''Dictionary class used to store edicts for the instantiating entity'''
+
+    """Dictionary class used to store edicts for the instantiating entity."""
 
     def __init__(self, entity, teams):
-        '''Stores the entity and the teams for the entity'''
-
+        """Store the entity and the teams for the entity."""
         # Store the entity
         self.entity = entity
 
         # Store the teams for the entity
         self.teams = frozenset(
-            [int(x) for x in teams.split(',') if int(x) in GameTeams])
+            [int(x) for x in teams.split(',') if int(x) in game_teams])
 
     def __missing__(self, index):
-        '''Called when a new edict is being added to the dictionary'''
-
+        """Called when a new edict is being added to the dictionary."""
         # Get the Edict instance for the index
         edict = edict_from_index(index)
 
@@ -55,9 +56,7 @@ class EntityManager(dict):
         return value
 
     def clear(self):
-        '''Clears the dictionary after removing all
-            trails for the edicts in the dictionary'''
-
+        """Clear the dictionary after removing all trails."""
         # Loop through each edict in the dictionary
         for index in self:
 
@@ -68,9 +67,7 @@ class EntityManager(dict):
         super(EntityManager, self).clear()
 
     def find_indexes(self):
-        '''Cleans up old indexes, adds new ones,
-            and dispatches effects for entities'''
-
+        """Find all current indexes and dispatch effects."""
         # Get a set of edicts currently on the server for the entity type
         indexlist = {
             index_from_edict(edict) for
@@ -99,8 +96,7 @@ class EntityManager(dict):
                 self[index].create_trail()
 
     def get_team_number(self, edict):
-        '''Returns the team number to use for the edict'''
-
+        """Return the team number to use for the edict."""
         # Get the edict's team number
         team = edict.get_prop_int('m_iTeamNum')
 
@@ -132,34 +128,33 @@ class EntityManager(dict):
         return choice(list(self.teams))
 
     def get_effect(self, team):
-        '''Returns the effect to use for the edict'''
-
+        """Return the effect to use for the edict."""
         # Get the effect name from the entity->team cvar
-        name = ConfigurationManager[
+        name = configuration_manager[
             self.entity][team].cvar.get_string().lower()
 
-        # Is the effect name in the EffectManager?
-        if name in EffectManager:
+        # Is the effect name in the effect_manager?
+        if name in effect_manager:
 
             # Return the effect's instance
-            return EffectManager[name]
+            return effect_manager[name]
 
         # Is the effect set to random?
         if name == 'random':
 
-            # Return a random effect from the EffectManager
-            return EffectManager[choice(list(EffectManager))]
+            # Return a random effect from the effect_manager
+            return effect_manager[choice(list(effect_manager))]
 
         # Return None (no effect for this entity)
         return None
 
 
 class IndexManager(object):
-    '''Class used to interact with an edict and its effect'''
+
+    """Class used to interact with an edict and its effect."""
 
     def __init__(self, edict, team, effect):
-        '''Stores the base attributes on instatiation'''
-
+        """Store the base attributes on instatiation."""
         # Store the edict
         self.edict = edict
 
@@ -173,8 +168,7 @@ class IndexManager(object):
         self.location = self.edict.get_prop_vector('m_vecOrigin')
 
     def create_trail(self):
-        '''Creates the trail for the edict'''
-
+        """Create the trail for the edict."""
         # Get the edict's current location vector
         location = self.edict.get_prop_vector('m_vecOrigin')
 
@@ -193,5 +187,5 @@ class IndexManager(object):
         self.location = location
 
     def remove_trail(self):
-        '''Removes the trail from the edict'''
+        """Remove the trail from the edict."""
         self.effect.remove_effect(self.edict)
