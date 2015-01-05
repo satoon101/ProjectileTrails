@@ -19,7 +19,7 @@ class BaseEffect(object):
         cls.variables = _VariableDictionary()
         return cls
 
-    def dispatch_effect(self, edict, team, start, end):
+    def dispatch_effect(self, instance):
         """Called when the effect should be dispatched for the given edict.
 
         This is called every tick for entities as long as
@@ -29,7 +29,7 @@ class BaseEffect(object):
             on attachment in a data structure.
         """
 
-    def remove_effect(self, edict):
+    def remove_effect(self, instance):
         """Called when the effect should be removed from the given edict.
 
         This is called when the script is being unloaded.

@@ -6,64 +6,21 @@
 # >> IMPORTS
 # =============================================================================
 # Source.Python Imports
-from core import GAME_NAME
 #   Config
 from config.manager import ConfigManager
 #   Tick
 from listeners import tick_listener_manager
 #   Translations
 from translations.strings import LangStrings
+#   Weapons
+from weapons import weapon_manager
 
 # Script Imports
 from projectile_trails.config import configuration_manager
-from projectile_trails.config import game_objects
 from projectile_trails.effects import effect_manager
 from projectile_trails.entities import EntityManager
 from projectile_trails.info import info
 from projectile_trails.teams import game_teams
-
-
-# =============================================================================
-# >> GAME VERIFICATION
-# =============================================================================
-# Get the NotImplemented string
-_not_implemented = LangStrings(
-    '{0}/strings'.format(info.basename))[
-        'NotImplemented'].get_string().format(GAME_NAME)
-
-# Is the game implemented?
-if not game_objects:
-
-    # If not, raise an error
-    raise NotImplementedError(_not_implemented)
-
-# Are any projectiles listed for the game?
-if not ('Projectiles' in game_objects and len(game_objects['Projectiles'])):
-
-    # If not, raise an error
-    raise NotImplementedError(_not_implemented)
-
-# Use try/except to get the first effect for the current game
-try:
-
-    # Get the first effect listed
-    _first = list(effect_manager)[0]
-
-# Was an error encountered?
-except IndexError:
-
-    # If there are no effects, raise an error
-    raise NotImplementedError(_not_implemented)
-
-
-# =============================================================================
-# >> PUBLIC VARIABLE
-# =============================================================================
-# Set the variable's value (in case it has already been created)
-info.convar.set_string(info.version)
-
-# Make the variable public
-info.convar.make_public()
 
 
 # =============================================================================
@@ -75,15 +32,17 @@ class _GameEntityManager(dict):
 
     def __init__(self):
         """Initialize the process."""
+        # Call the super class' init
+        super(_GameEntityManager, self).__init__()
+
         # Set the base tick counter
         self.current_ticks = 0
 
-        # Loop through all entities
-        for entity in game_objects['Projectiles']:
+        # Loop through all projectile entities
+        for classname in weapon_manager.projectiles:
 
             # Add the entity to the dictionary
-            self[entity] = EntityManager(
-                entity, game_objects['Projectiles'][entity])
+            self[classname] = EntityManager(classname)
 
     def clear(self):
         """Stop all ongoing effects and clears the dictionary."""
@@ -160,7 +119,7 @@ with ConfigManager(info.basename) as config:
             # Create the entity->team cvar
             cvar = configuration_manager[_entity][team].cvar = config.cvar(
                 'lt_{0}_{1}'.format(_entity, game_teams[team].lower()),
-                _first, 0, _team_cvar.format(game_teams[team], _entity))
+                'smoke', 0, _team_cvar.format(game_teams[team], _entity))
 
             # Loop through each effect
             for effect in effect_manager:

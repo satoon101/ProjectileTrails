@@ -27,6 +27,6 @@ class Smoke(BaseEffect):
 
     """Smoke effect."""
 
-    def dispatch_effect(self, edict, team, start, end):
+    def dispatch_effect(self, instance):
         """Create the smoke trail for the given edict."""
-        effects.smoke(end, model_index, 5, 0.1)
+        effects.smoke(instance.location, model_index, 5, 0.1)

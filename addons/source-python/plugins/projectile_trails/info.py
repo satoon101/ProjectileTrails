@@ -6,7 +6,7 @@
 # >> IMPORTS
 # =============================================================================
 # Source.Python Imports
-from cvars import ConVar
+from cvars.public import PublicConVar
 #   Addons
 from plugins.info import PluginInfo
 
@@ -21,5 +21,5 @@ info.version = '1.0'
 info.basename = 'projectile_trails'
 info.variable = info.basename + '_version'
 info.url = ''
-info.convar = ConVar(
+info.convar = PublicConVar(
     info.variable, info.version, 0, info.name + ' Version')

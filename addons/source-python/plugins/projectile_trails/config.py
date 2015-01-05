@@ -2,25 +2,6 @@
 
 """Provides configuration based functionality for the plugin."""
 
-# =============================================================================
-# >> IMPORTS
-# =============================================================================
-# Python Imports
-#   ConfigObj
-from configobj import ConfigObj
-
-# Source.Python Imports
-from core import GAME_NAME
-from paths import PLUGIN_DATA_PATH
-
-
-# =============================================================================
-# >> GLOBAL VARIABLES
-# =============================================================================
-# Get the game's ini file
-game_objects = ConfigObj(
-    PLUGIN_DATA_PATH.joinpath('projectile_trails', GAME_NAME + '.ini'))
-
 
 # =============================================================================
 # >> CLASSES
