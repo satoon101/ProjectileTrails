@@ -2,68 +2,61 @@
 
 """Provides a base class for all effects to inherit."""
 
+# =============================================================================
+# >> IMPORTS
+# =============================================================================
+# Python
+from collections import namedtuple
+
+# Source.Python
+from mathlib import Vector
+
+
+# =============================================================================
+# >> ALL DECLARATION
+# =============================================================================
+__all__ = (
+    'BaseEffect',
+    'VARIABLE',
+)
+
+
+# =============================================================================
+# >> GLOBAL VARIABLES
+# =============================================================================
+VARIABLE = namedtuple('VARIABLE', ('default', 'description'))
+
 
 # =============================================================================
 # >> CLASSES
 # =============================================================================
 class BaseEffect(object):
-
     """Base class used for all effects.
 
     Effects must override existing methods to utilize them.
     """
 
-    def __new__(cls):
-        """Create the new instance and adds the variables attribute."""
-        cls = object.__new__(cls)
-        cls.variables = _VariableDictionary()
-        return cls
+    variables = {}
 
-    def dispatch_effect(self, instance):
-        """Called when the effect should be dispatched for the given edict.
+    def __init__(self, entity, convars):
+        """Store the given information and create the trail."""
+        super().__init__()
+        self.entity = entity
+        self.location = Vector(*self.entity.origin)
+        self.convars = convars
+        self.create_trail()
 
-        This is called every tick for entities as long as
-            they have moved since the previous tick.
+    def get_updated_locations(self):
+        """Update the stored location and return both the old and new."""
+        location = self.location
+        self.location = Vector(*self.entity.origin)
+        return location, self.location
 
-        Effects that attach to entities should store the edict
-            on attachment in a data structure.
-        """
+    def create_trail(self):
+        """Create the trail on initialization."""
 
-    def remove_effect(self, instance):
-        """Called when the effect should be removed from the given edict.
+    def update_trail(self):
+        """Create/update the trail for each interval."""
 
-        This is called when the script is being unloaded.
-        """
-
-    def remove_index(self, index):
-        """Called when the index is no longer on the server.
-
-        This is called so that effects that attach to an entity
-            can remove the entity from their data structure.
-        """
-
-
-class _VariableDictionary(dict):
-
-    """Dictionary class used to store Variable instances."""
-
-    def __setitem__(self, item, value):
-        """Verify that the given instance is a Variable instance."""
-        # Is the given value a Variable instance?
-        if not isinstance(value, Variable):
-
-            # If not, raise an error
-            raise ValueError('Value must be a Variable instance')
-
-        # Set the item in the dictionary
-        super(_VariableDictionary, self).__setitem__(item, value)
-
-
-class Variable(object):
-
-    """Class to be used by effects to create effect specific variables."""
-
-    def __init__(self, default, description):
-        """Store the base attributes of the cvar."""
-        self.default = default
-        self.description = description
+    def remove_trail(self):
+        """Remove the effect from the entity."""

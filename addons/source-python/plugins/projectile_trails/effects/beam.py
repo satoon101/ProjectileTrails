@@ -5,64 +5,73 @@
 # =============================================================================
 # >> IMPORTS
 # =============================================================================
-# Source.Python Imports
+# Source.Python
+from colors import Color
 from core import SOURCE_ENGINE
-from cvars import ConVar
+from effects.base import TempEntity
 from engines.precache import Model
-from effects import effects
-#   Translations
 from translations.strings import LangStrings
 
-# Script Imports
-from projectile_trails.info import info
-from projectile_trails.teams import game_teams
-from projectile_trails.effects.base import BaseEffect
-from projectile_trails.effects.base import Variable
+# Plugin
+from ..info import info
+from .base import BaseEffect, VARIABLE
+
+
+# =============================================================================
+# >> ALL DECLARATION
+# =============================================================================
+__all__ = (
+    'Beam',
+)
 
 
 # =============================================================================
 # >> GLOBAL VARIABLES
 # =============================================================================
-# Precache the beam model
-model = Model('sprites/laser{0}.vmt'.format(
-    'beam' if SOURCE_ENGINE == 'csgo' else ''))
+# Pre-cache the beam model
+_model = Model(
+    'sprites/laser{suffix}.vmt'.format(
+        suffix='beam' if SOURCE_ENGINE == 'csgo' else ''
+    )
+)
 
 # Get the LangStrings for beam effect
-beam_strings = LangStrings(info.basename + '/beam_strings')
+BEAM_STRINGS = LangStrings(info.name + '/beam_strings')
 
 
 # =============================================================================
 # >> CLASSES
 # =============================================================================
 class Beam(BaseEffect):
+    """Beam trail effect."""
 
-    """Beam effect."""
+    variables = {
+        'beam_color': VARIABLE(
+            default='255,0,0',
+            description=BEAM_STRINGS['Color'].get_string(),
+        )
+    }
 
-    def __init__(self):
-        """Create the color cvar."""
-        self.variables['color'] = Variable(
-            '255,0,0', beam_strings['Color'].get_string())
-
-    def dispatch_effect(self, instance):
-        """Create the beam trail for the given edict."""
+    def create_trail(self):
+        """Create the beam trail for the given entity."""
         # Get the values for the beam color
-        values = ConVar(
-            'lt_{0}_{1}_beam_color'.format(instance.classname, game_teams[
-                instance.team_number].lower())).get_string()
+        rgb = str(self.convars['beam_color'])
 
         # Use try/except to split the color values
         try:
+            color = Color(*map(int, rgb.split(',')))
 
-            # Get the rgb values
-            red, green, blue = map(int, values.split(','))
-
-        # Was an exception encountered?
+        # Otherwise, set the colors to a default value
         except ValueError:
-
-            # Set the colors to a default value
-            red = green = blue = 127
+            color = Color(127, 127, 127)
 
         # Create the beam effect
-        effects.beam(
-            instance.origin, instance.location, model.index, model.index,
-            0, 0, 0.5, 10, 10, 1, 1, red, green, blue, 255, 30)
+        entity = TempEntity('BeamFollow')
+        entity.start_width = 6
+        entity.end_width = 6
+        entity.color = color
+        entity.model = _model
+        entity.halo = _model
+        entity.entity_index = self.entity.index
+        entity.life_time = 2
+        entity.create()

@@ -5,160 +5,125 @@
 # =============================================================================
 # >> IMPORTS
 # =============================================================================
-# Source.Python Imports
-#   Config
-from config.manager import ConfigManager
-#   Tick
-from listeners import tick_listener_manager
-#   Translations
-from translations.strings import LangStrings
-#   Weapons
-from weapons import weapon_manager
+# Python
+from random import choice
 
-# Script Imports
-from projectile_trails.config import configuration_manager
-from projectile_trails.effects import effect_manager
-from projectile_trails.entities import EntityManager
-from projectile_trails.info import info
-from projectile_trails.teams import game_teams
+# Source.Python
+from core import GAME_NAME
+from engines.server import global_vars
+from listeners import OnEntitySpawned, OnEntityDeleted, OnTick
+from weapons.entity import Weapon
+
+# Plugin
+from . import PROJECTILE_ENTITIES
+from .config import EFFECT_CONVARS, ticks
+from .effects import EFFECT_DICTIONARY
+from .strings import TRANSLATION_STRINGS
+from .teams import GAME_TEAMS
+
+
+# =============================================================================
+# >> GAME VERIFICATION
+# =============================================================================
+# Are any projectiles listed for the game?
+if not PROJECTILE_ENTITIES:
+    raise NotImplementedError(
+        TRANSLATION_STRINGS['No Projectiles'].get_string().format(
+            game=GAME_NAME,
+        )
+    )
+
+# Are there any valid teams for the game?
+if not GAME_TEAMS:
+    raise NotImplementedError(
+        TRANSLATION_STRINGS['No Teams'].get_string().format(
+            game=GAME_NAME,
+        )
+    )
 
 
 # =============================================================================
 # >> CLASSES
 # =============================================================================
 class _GameEntityManager(dict):
-
     """Class used to hold EntityManager instances for each entity."""
 
-    def __init__(self):
-        """Initialize the process."""
-        # Call the super class' init
-        super(_GameEntityManager, self).__init__()
+    def __delitem__(self, index):
+        """Remove the trail from the entity prior to removing it from dict."""
+        if index not in self:
+            return
 
-        # Set the base tick counter
-        self.current_ticks = 0
+        self[index].remove_trail()
+        super().__delitem__(index)
 
-        # Loop through all projectile entities
-        for classname in weapon_manager.projectiles:
+    def add_entity(self, entity, convars):
+        """Add the entity to the dictionary if it needs a trail effect."""
+        effect = self._get_effect(convars)
+        if effect is not None:
+            self[entity.index] = effect(entity, convars)
 
-            # Add the entity to the dictionary
-            self[classname] = EntityManager(classname)
+    @staticmethod
+    def _get_effect(convars):
+        """Return the effect to be used for the entity."""
+        effect = str(convars['effect']).lower()
+        if effect in EFFECT_DICTIONARY:
+            return EFFECT_DICTIONARY[effect]
+
+        if effect == 'random':
+            return choice(EFFECT_DICTIONARY.values())
+
+        return None
 
     def clear(self):
-        """Stop all ongoing effects and clears the dictionary."""
-        # Loop through all entities in the dictionary
-        for entity in self:
-
-            # Clear the entity's dictionary
-            self[entity].clear()
-
-        # Clear the dictionary
-        super(_GameEntityManager, self).clear()
+        """Stop all ongoing effects and clear the dictionary."""
+        for index in list(self):
+            del self[index]
 
     def tick_listener(self):
         """Check to see if the effects need updated."""
-        # Increment the current tick count
-        self.current_ticks += 1
-
         # Are more ticks needed to update?
-        if self.current_ticks < configuration_manager.ticks.get_int():
-
-            # If so, return
+        if global_vars.tick_count % int(ticks):
             return
 
-        # Reset the base tick counter
-        self.current_ticks = 0
+        for instance in self.values():
+            instance.update_trail()
 
-        # Loop through all projectile entities for the game
-        for entity in self:
-
-            # Find all current indexes for the entity
-            self[entity].find_indexes()
-
-# Get the _GameEntityManager instance
 game_entity_manager = _GameEntityManager()
 
 
 # =============================================================================
-# >> CONFIGURATION SETUP
+# >> LISTENERS
 # =============================================================================
-# Get the LangStrings for the config file
-config_strings = LangStrings('{0}/config_strings'.format(info.basename))
+@OnEntitySpawned
+def _entity_spawned(base_entity):
+    """Add the entity to the dictionary if it is a projectile."""
+    if not base_entity.is_networked():
+        return
 
-# Store the common strings
-_options = config_strings['Options'].get_string()
-_team_cvar = config_strings['TeamCvar'].get_string()
+    class_name = base_entity.classname
+    if class_name not in PROJECTILE_ENTITIES:
+        return
 
-# Create the config file
-with ConfigManager(info.basename) as config:
-
-    # Add the config header
-    config.header = config_strings[
-        'Main'].get_string().format(info.name, info.version)
-
-    # Create the tick cvar
-    configuration_manager.ticks = config.cvar(
-        'lt_wait_ticks', '7', 0, config_strings['Ticks'])
-
-    # Loop through each entity
-    for _entity in game_entity_manager:
-
-        # Create the entity's section
-        config.section(_options.format(_entity.upper()))
-
-        # Loop through each team the entity supports
-        for team in game_entity_manager[_entity].teams:
-
-            # Create a subsection for the team
-            text = _options.format(
-                _entity.upper() + ' ' + game_teams[team].upper())
-            config.text('=' * len(text) + ' //')
-            config.text(text + ' //')
-            config.text('=' * len(text) + ' //')
-
-            # Create the entity->team cvar
-            cvar = configuration_manager[_entity][team].cvar = config.cvar(
-                'lt_{0}_{1}'.format(_entity, game_teams[team].lower()),
-                'smoke', 0, _team_cvar.format(game_teams[team], _entity))
-
-            # Loop through each effect
-            for effect in effect_manager:
-
-                # Loop through all variables for the effect
-                for variable in effect_manager[effect].variables:
-
-                    # Get the variable's name
-                    name = 'lt_{0}_{1}_{2}_{3}'.format(
-                        _entity, game_teams[team].lower(), effect, variable)
-
-                    # Get the variable's default value
-                    default = effect_manager[
-                        effect].variables[variable].default
-
-                    # Get the variable's description
-                    description = effect_manager[
-                        effect].variables[variable].description
-
-                    # Add the enity->team->effect->variable
-                    # cvar to the dictionary
-                    configuration_manager[
-                        _entity][team][effect][variable].cvar = config.cvar(
-                            name, default, 0, description)
+    projectile = Weapon(base_entity.index)
+    team_index = projectile.owner.team_index
+    if team_index in EFFECT_CONVARS[class_name]:
+        game_entity_manager.add_entity(
+            entity=base_entity,
+            convars=EFFECT_CONVARS[class_name][team_index],
+        )
 
 
-# =============================================================================
-# >> FUNCTIONS
-# =============================================================================
-def load():
-    """Register the tick listener on load."""
-    tick_listener_manager.register_listener(game_entity_manager.tick_listener)
+@OnEntityDeleted
+def _entity_deleted(base_entity):
+    """Remove the entity from the dictionary if it is a projectile."""
+    if not base_entity.is_networked():
+        return
+
+    index = base_entity.index
+    del game_entity_manager[index]
 
 
-def unload():
-    """Clean up on script unload."""
-    # Unregister the tick listener
-    tick_listener_manager.unregister_listener(
-        game_entity_manager.tick_listener)
-
-    # Clear the entity manager to stop all active effects
-    game_entity_manager.clear()
+@OnTick
+def _on_tick():
+    """Call the tick listener."""
+    game_entity_manager.tick_listener()

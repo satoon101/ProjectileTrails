@@ -5,53 +5,35 @@
 # =============================================================================
 # >> IMPORTS
 # =============================================================================
-# Python Imports
-#   Importlib
+# Python
 from importlib import import_module
 
-# Script Imports
-from projectile_trails.config import game_objects
-from projectile_trails.effects.base import BaseEffect
+# Site-package
+from path import Path
+
+# Plugin
+from .base import BaseEffect
+from ..info import info
+
+
+# =============================================================================
+# >> ALL DECLARATION
+# =============================================================================
+__all__ = (
+    'EFFECT_DICTIONARY',
+)
 
 
 # =============================================================================
 # >> GLOBAL VARIABLES
 # =============================================================================
 # Create an empty dictionary to store the effects by name and instance
-effect_manager = {}
+EFFECT_DICTIONARY = {}
 
 # Loop through each file in the effects folder
-for effect, classname in game_objects['Effects'].iteritems():
-
-    # Import the module
-    module = import_module('projectile_trails.effects.' + effect)
-
-    # Use try/except to add the object to the effect_manager dictionary
-    try:
-
-        # Get the class object
-        instance = module.__dict__[classname]
-
-    # Was an exception encountered?
-    except KeyError:
-
-        # Move on to the next effect
-        continue
-
-    # Use try/except in case the object is not a class object
-    try:
-
-        # Is the class object a BaseEffect sub-class?
-        if not issubclass(instance, BaseEffect):
-
-            # Move on to the next effect
-            continue
-
-    # Was an exception encountered?
-    except TypeError:
-
-        # Move on to the next effect
-        continue
-
-    # Add the instance to the dictionary
-    effect_manager[effect] = instance()
+for _file in Path(__file__).parent.files('[a-z]*'):
+    _module = import_module(f'{info.name}.effects.{_file.namebase}')
+    for _item in getattr(_module, '__all__', []):
+        _instance = getattr(_module, _item)
+        if issubclass(_instance, BaseEffect) and _instance is not BaseEffect:
+            EFFECT_DICTIONARY[_item.lower()] = _instance

@@ -1,23 +1,28 @@
-# ../projectile_trails/__init__.py
+# ../projectile_trails/strings.py
 
-"""Verifies the game is supported."""
+"""Contains all translation variables for the base plugin."""
 
 # =============================================================================
 # >> IMPORTS
 # =============================================================================
 # Source.Python
-from weapons.manager import weapon_manager
+from translations.strings import LangStrings
+
+# Plugin
+from .info import info
 
 
 # =============================================================================
 # >> ALL DECLARATION
 # =============================================================================
 __all__ = (
-    'PROJECTILE_ENTITIES',
+    'CONFIG_STRINGS',
+    'TRANSLATION_STRINGS',
 )
 
 
 # =============================================================================
-# >> GLOBAL VARIABLES
+# >> GAME VERIFICATION
 # =============================================================================
-PROJECTILE_ENTITIES = weapon_manager.projectiles.keys()
+CONFIG_STRINGS = LangStrings(info.name + '/config_strings')
+TRANSLATION_STRINGS = LangStrings(info.name + '/strings')

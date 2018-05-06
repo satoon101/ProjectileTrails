@@ -5,21 +5,19 @@
 # =============================================================================
 # >> IMPORTS
 # =============================================================================
-# Source.Python Imports
-from cvars.public import PublicConVar
-#   Addons
-from plugins.info import PluginInfo
+# Source.Python
+from plugins.manager import plugin_manager
 
 
 # =============================================================================
-# >> ADDON INFO
+# >> ALL DECLARATION
 # =============================================================================
-info = PluginInfo()
-info.name = 'Projectile Trails'
-info.author = 'Satoon101'
-info.version = '1.0'
-info.basename = 'projectile_trails'
-info.variable = info.basename + '_version'
-info.url = ''
-info.convar = PublicConVar(
-    info.variable, info.version, 0, info.name + ' Version')
+__all__ = (
+    'info',
+)
+
+
+# =============================================================================
+# >> PLUGIN INFO
+# =============================================================================
+info = plugin_manager.get_plugin_info(__name__)

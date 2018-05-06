@@ -5,28 +5,39 @@
 # =============================================================================
 # >> IMPORTS
 # =============================================================================
-# Source.Python Imports
-from engines.server import engine_server
-from effects import effects
+# Source.Python
+from effects.base import TempEntity
+from engines.precache import Model
 
-# Script Imports
-from projectile_trails.effects.base import BaseEffect
+# Plugin
+from .base import BaseEffect
+
+
+# =============================================================================
+# >> ALL DECLARATION
+# =============================================================================
+__all__ = (
+    'Smoke',
+)
 
 
 # =============================================================================
 # >> GLOBAL VARIABLES
 # =============================================================================
-# Precache the smoke model
-model_index = engine_server.precache_model('sprites/smoke.vmt')
+# Pre-cache the smoke model
+_model = Model('sprites/smoke.vmt')
 
 
 # =============================================================================
 # >> CLASSES
 # =============================================================================
 class Smoke(BaseEffect):
+    """Smoke trail effect."""
 
-    """Smoke effect."""
-
-    def dispatch_effect(self, instance):
-        """Create the smoke trail for the given edict."""
-        effects.smoke(instance.location, model_index, 5, 0.1)
+    def update_trail(self):
+        """Create the smoke trail for the given entity."""
+        entity = TempEntity('Smoke')
+        entity.origin = self.entity.origin
+        entity.model = _model
+        entity.scale = 1
+        entity.create()
