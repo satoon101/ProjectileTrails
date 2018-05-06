@@ -20,4 +20,4 @@ __all__ = (
 # =============================================================================
 # >> GLOBAL VARIABLES
 # =============================================================================
-PROJECTILE_ENTITIES = weapon_manager.projectiles.keys()
+PROJECTILE_ENTITIES = weapon_manager.projectiles

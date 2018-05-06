@@ -48,7 +48,7 @@ class Beam(BaseEffect):
     variables = {
         'beam_color': VARIABLE(
             default='255,0,0',
-            description=BEAM_STRINGS['Color'].get_string(),
+            description=BEAM_STRINGS['Color'],
         )
     }
 
