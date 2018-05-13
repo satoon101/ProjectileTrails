@@ -56,11 +56,11 @@ class _GameEntityManager(dict):
         self[index].remove_trail()
         super().__delitem__(index)
 
-    def add_entity(self, entity, convars):
+    def add_entity(self, entity, convars, team_index):
         """Add the entity to the dictionary if it needs a trail effect."""
         effect = self._get_effect(convars)
         if effect is not None:
-            self[entity.index] = effect(entity, convars)
+            self[entity.index] = effect(entity, convars, team_index)
 
     @staticmethod
     def _get_effect(convars):
@@ -110,6 +110,7 @@ def _entity_spawned(base_entity):
         game_entity_manager.add_entity(
             entity=base_entity,
             convars=EFFECT_CONVARS[class_name][team_index],
+            team_index=team_index,
         )
 
 

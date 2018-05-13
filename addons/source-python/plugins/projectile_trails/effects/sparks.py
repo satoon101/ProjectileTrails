@@ -35,4 +35,4 @@ class Sparks(BaseEffect):
         entity.direction = direction
         entity.trail_length = 3
         entity.magnitude = 1
-        entity.create()
+        self.create_temp_entity(entity)

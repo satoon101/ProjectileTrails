@@ -25,6 +25,7 @@ from .teams import GAME_TEAMS
 # =============================================================================
 __all__ = (
     'EFFECT_CONVARS',
+    'team_only',
     'ticks',
 )
 
@@ -46,8 +47,13 @@ EFFECT_CONVARS = defaultdict(lambda: defaultdict(dict))
 with ConfigManager(info.name, 'pt_') as _config:
     ticks = _config.cvar(
         name='ticks_between_check',
-        description=CONFIG_STRINGS['Ticks'],
+        description=CONFIG_STRINGS['ticks'],
         default=7,
+    )
+    team_only = _config.cvar(
+        name='team_only',
+        description=CONFIG_STRINGS['team_only'],
+        default=0,
     )
 
     _config.text(CONFIG_STRINGS['Options'])

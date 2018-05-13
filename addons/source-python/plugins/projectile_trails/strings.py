@@ -22,7 +22,7 @@ __all__ = (
 
 
 # =============================================================================
-# >> GAME VERIFICATION
+# >> GLOBAL VARIABLES
 # =============================================================================
-CONFIG_STRINGS = LangStrings(info.name + '/config_strings')
-TRANSLATION_STRINGS = LangStrings(info.name + '/strings')
+CONFIG_STRINGS = LangStrings(f'{info.name}/config_strings')
+TRANSLATION_STRINGS = LangStrings(f'{info.name}/strings')

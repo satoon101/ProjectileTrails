@@ -74,4 +74,4 @@ class Beam(BaseEffect):
         entity.halo = _model
         entity.entity_index = self.entity.index
         entity.life_time = 2
-        entity.create()
+        self.create_temp_entity(entity)

@@ -40,4 +40,4 @@ class Smoke(BaseEffect):
         entity.origin = self.entity.origin
         entity.model = _model
         entity.scale = 1
-        entity.create()
+        self.create_temp_entity(entity)

@@ -31,4 +31,4 @@ class Dust(BaseEffect):
         entity = TempEntity('Dust')
         entity.origin = self.entity.origin
         entity.size = 20
-        entity.create()
+        self.create_temp_entity(entity)
