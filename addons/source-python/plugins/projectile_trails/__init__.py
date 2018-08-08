@@ -1,6 +1,6 @@
 # ../projectile_trails/__init__.py
 
-"""Verifies the game is supported."""
+"""Plugin that displays trail effects for projectile weapons."""
 
 # =============================================================================
 # >> IMPORTS

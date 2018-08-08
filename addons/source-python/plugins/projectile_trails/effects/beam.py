@@ -7,7 +7,7 @@
 # =============================================================================
 # Source.Python
 from colors import Color
-from core import SOURCE_ENGINE
+from core import GAME_NAME
 from effects.base import TempEntity
 from engines.precache import Model
 from translations.strings import LangStrings
@@ -31,7 +31,7 @@ __all__ = (
 # Pre-cache the beam model
 _model = Model(
     'sprites/laser{suffix}.vmt'.format(
-        suffix='beam' if SOURCE_ENGINE == 'csgo' else ''
+        suffix='beam' if GAME_NAME == 'csgo' else ''
     )
 )
 
