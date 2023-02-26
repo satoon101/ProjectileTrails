@@ -88,6 +88,7 @@ class _GameEntityManager(dict):
         for instance in self.values():
             instance.update_trail()
 
+
 game_entity_manager = _GameEntityManager()
 
 

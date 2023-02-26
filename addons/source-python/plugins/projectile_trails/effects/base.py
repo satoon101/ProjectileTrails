@@ -33,7 +33,7 @@ VARIABLE = namedtuple('VARIABLE', ('default', 'description'))
 # =============================================================================
 # >> CLASSES
 # =============================================================================
-class BaseEffect(object):
+class BaseEffect:
     """Base class used for all effects.
 
     Effects must override existing methods to utilize them.
@@ -52,6 +52,8 @@ class BaseEffect(object):
 
     def get_recipients(self):
         """Return a RecipientFilter for the recipients of the effect."""
+        # pylint: disable=import-outside-toplevel
+        # pylint: disable=cyclic-import
         from ..config import team_only
         team_filter = ()
         if bool(team_only):

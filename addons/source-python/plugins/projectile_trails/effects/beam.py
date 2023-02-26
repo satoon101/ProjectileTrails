@@ -29,11 +29,7 @@ __all__ = (
 # >> GLOBAL VARIABLES
 # =============================================================================
 # Pre-cache the beam model
-_model = Model(
-    'sprites/laser{suffix}.vmt'.format(
-        suffix='beam' if GAME_NAME == 'csgo' else ''
-    )
-)
+_model = Model(f'sprites/laser{"beam" if GAME_NAME == "csgo" else ""}.vmt')
 
 # Get the LangStrings for beam effect
 BEAM_STRINGS = LangStrings(info.name + '/beam_strings')

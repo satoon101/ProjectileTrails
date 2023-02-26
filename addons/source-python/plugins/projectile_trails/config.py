@@ -33,14 +33,14 @@ __all__ = (
 # =============================================================================
 # >> CONFIGURATION
 # =============================================================================
-_variables = dict([
-    (key, instance[key]) for instance in list(
+_variables = {
+    key: instance[key] for instance in list(
         map(
             attrgetter('variables'),
             EFFECT_DICTIONARY.values()
         )
     ) for key in instance
-])
+}
 
 EFFECT_CONVARS = defaultdict(lambda: defaultdict(dict))
 
