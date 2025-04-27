@@ -32,7 +32,7 @@ EFFECT_DICTIONARY = {}
 
 # Loop through each file in the effects folder
 for _file in Path(__file__).parent.files('[a-z]*'):
-    _module = import_module(f'{info.name}.effects.{_file.namebase}')
+    _module = import_module(f'{info.name}.effects.{_file.stem}')
     for _item in getattr(_module, '__all__', []):
         _instance = getattr(_module, _item)
         if issubclass(_instance, BaseEffect) and _instance is not BaseEffect:
