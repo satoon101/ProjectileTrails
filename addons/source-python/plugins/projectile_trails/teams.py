@@ -17,12 +17,11 @@ from players.teams import team_managers, teams_by_number
 # Plugin
 from .info import info
 
-
 # =============================================================================
 # >> ALL DECLARATION
 # =============================================================================
 __all__ = (
-    'GAME_TEAMS',
+    "GAME_TEAMS",
 )
 
 
@@ -31,13 +30,13 @@ __all__ = (
 # =============================================================================
 # Get any odd team names stored in ../data/plugins/projectile_trails/
 _odd_teams = ConfigObj(
-    PLUGIN_DATA_PATH / info.name + '.ini'
+    PLUGIN_DATA_PATH / info.name + ".ini",
 ).get(GAME_NAME, {})
 
 GAME_TEAMS = {}
 for manager in team_managers:
     for entity in EntityIter(manager):
-        if teams_by_number[entity.team] in ('un', 'spec'):
+        if teams_by_number[entity.team] in ("un", "spec"):
             continue
 
         GAME_TEAMS[entity.team] = entity.team_name

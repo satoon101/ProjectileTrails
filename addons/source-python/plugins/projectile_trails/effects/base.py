@@ -14,27 +14,31 @@ from filters.recipients import RecipientFilter
 from mathlib import Vector
 from players.teams import teams_by_number
 
-
 # =============================================================================
 # >> ALL DECLARATION
 # =============================================================================
 __all__ = (
-    'BaseEffect',
-    'VARIABLE',
+    "VARIABLE",
+    "BaseEffect",
 )
 
 
 # =============================================================================
 # >> GLOBAL VARIABLES
 # =============================================================================
-VARIABLE = namedtuple('VARIABLE', ('default', 'description'))
+# ruff: noqa: PYI024
+VARIABLE = namedtuple(
+    typename="VARIABLE",
+    field_names=("default", "description"),
+)
 
 
 # =============================================================================
 # >> CLASSES
 # =============================================================================
 class BaseEffect:
-    """Base class used for all effects.
+    """
+    Base class used for all effects.
 
     Effects must override existing methods to utilize them.
     """
@@ -52,8 +56,6 @@ class BaseEffect:
 
     def get_recipients(self):
         """Return a RecipientFilter for the recipients of the effect."""
-        # pylint: disable=import-outside-toplevel
-        # pylint: disable=cyclic-import
         from ..config import team_only
         team_filter = ()
         if bool(team_only):

@@ -11,12 +11,11 @@ from effects.base import TempEntity
 # Plugin
 from .base import BaseEffect
 
-
 # =============================================================================
 # >> ALL DECLARATION
 # =============================================================================
 __all__ = (
-    'Sparks',
+    "Sparks",
 )
 
 
@@ -28,7 +27,7 @@ class Sparks(BaseEffect):
 
     def update_trail(self):
         """Create the sparks trail for the given entity."""
-        entity = TempEntity('Sparks')
+        entity = TempEntity("Sparks")
         entity.origin = self.entity.origin
         direction = self.entity.base_velocity
         direction.negate()

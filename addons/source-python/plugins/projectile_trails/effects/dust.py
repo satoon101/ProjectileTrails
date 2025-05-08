@@ -11,12 +11,11 @@ from effects.base import TempEntity
 # Plugin
 from .base import BaseEffect
 
-
 # =============================================================================
 # >> ALL DECLARATION
 # =============================================================================
 __all__ = (
-    'Dust',
+    "Dust",
 )
 
 
@@ -28,7 +27,7 @@ class Dust(BaseEffect):
 
     def update_trail(self):
         """Create the smoke trail for the given entity."""
-        entity = TempEntity('Dust')
+        entity = TempEntity("Dust")
         entity.origin = self.entity.origin
         entity.size = 20
         self.create_temp_entity(entity)

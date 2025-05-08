@@ -8,12 +8,11 @@
 # Source.Python
 from weapons.manager import weapon_manager
 
-
 # =============================================================================
 # >> ALL DECLARATION
 # =============================================================================
 __all__ = (
-    'PROJECTILE_ENTITIES',
+    "PROJECTILE_ENTITIES",
 )
 
 

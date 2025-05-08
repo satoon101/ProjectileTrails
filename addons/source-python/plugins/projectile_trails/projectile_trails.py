@@ -11,7 +11,7 @@ from random import choice
 # Source.Python
 from core import GAME_NAME
 from engines.server import global_vars
-from listeners import OnEntitySpawned, OnEntityDeleted, OnTick
+from listeners import OnEntityDeleted, OnEntitySpawned, OnTick
 from weapons.entity import Weapon
 
 # Plugin
@@ -21,24 +21,23 @@ from .effects import EFFECT_DICTIONARY
 from .strings import TRANSLATION_STRINGS
 from .teams import GAME_TEAMS
 
-
 # =============================================================================
 # >> GAME VERIFICATION
 # =============================================================================
 # Are any projectiles listed for the game?
 if not PROJECTILE_ENTITIES:
     raise NotImplementedError(
-        TRANSLATION_STRINGS['No Projectiles'].get_string().format(
+        TRANSLATION_STRINGS["No Projectiles"].get_string().format(
             game=GAME_NAME,
-        )
+        ),
     )
 
 # Are there any valid teams for the game?
 if not GAME_TEAMS:
     raise NotImplementedError(
-        TRANSLATION_STRINGS['No Teams'].get_string().format(
+        TRANSLATION_STRINGS["No Teams"].get_string().format(
             game=GAME_NAME,
-        )
+        ),
     )
 
 
@@ -65,11 +64,11 @@ class _GameEntityManager(dict):
     @staticmethod
     def _get_effect(convars):
         """Return the effect to be used for the entity."""
-        effect = str(convars['effect']).lower()
+        effect = str(convars["effect"]).lower()
         if effect in EFFECT_DICTIONARY:
             return EFFECT_DICTIONARY[effect]
 
-        if effect == 'random':
+        if effect == "random":
             return choice(EFFECT_DICTIONARY.values())
 
         return None
