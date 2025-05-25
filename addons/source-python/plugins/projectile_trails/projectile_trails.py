@@ -27,7 +27,7 @@ from .teams import GAME_TEAMS
 # Are any projectiles listed for the game?
 if not PROJECTILE_ENTITIES:
     raise NotImplementedError(
-        TRANSLATION_STRINGS["No Projectiles"].get_string().format(
+        TRANSLATION_STRINGS["No Projectiles"].get_string(
             game=GAME_NAME,
         ),
     )
@@ -35,7 +35,7 @@ if not PROJECTILE_ENTITIES:
 # Are there any valid teams for the game?
 if not GAME_TEAMS:
     raise NotImplementedError(
-        TRANSLATION_STRINGS["No Teams"].get_string().format(
+        TRANSLATION_STRINGS["No Teams"].get_string(
             game=GAME_NAME,
         ),
     )
